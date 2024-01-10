@@ -32,6 +32,7 @@ os.makedirs(output_folder, exist_ok=True)
 # Define transformation and load CIFAR-10 dataset
 transform = transforms.Compose([
     transforms.Resize((32, 32)),
+    # transforms.ColorJitter(contrast=0.5),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
