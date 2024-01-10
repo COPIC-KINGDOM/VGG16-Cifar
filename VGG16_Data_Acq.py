@@ -36,6 +36,14 @@ data_loader = DataLoader(cifar10_dataset, batch_size=1, shuffle=True)
 
 class_outputs = {}
 
+conv_layers = [
+        vgg_model.conv1_1, vgg_model.relu1_1, vgg_model.conv1_2, vgg_model.relu1_2, vgg_model.pool1,
+        vgg_model.conv2_1, vgg_model.relu2_1, vgg_model.conv2_2, vgg_model.relu2_2, vgg_model.pool2,
+        vgg_model.conv3_1, vgg_model.relu3_1, vgg_model.conv3_2, vgg_model.relu3_2, vgg_model.conv3_3, vgg_model.relu3_3, vgg_model.pool3,
+        vgg_model.conv4_1, vgg_model.relu4_1, vgg_model.conv4_2, vgg_model.relu4_2, vgg_model.conv4_3, vgg_model.relu4_3, vgg_model.pool4,
+        vgg_model.conv5_1, vgg_model.relu5_1, vgg_model.conv5_2, vgg_model.relu5_2, vgg_model.conv5_3, vgg_model.relu5_3, vgg_model.pool5,
+    ]
+
 # Iterate over each label
 for label in range(10):
     # Define output and heatmap folders for the current label
@@ -52,7 +60,7 @@ for label in range(10):
             all_outputs = {}
 
             # Iterate over each layer and save outputs
-            for i, layer in enumerate(vgg_model):
+            for i, layer in enumerate(conv_layers):
                 input_image = layer(input_image)
                 layer_output = input_image.squeeze().detach().cpu().numpy()
 
