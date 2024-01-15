@@ -86,6 +86,7 @@ for label in range(10):
                     layer_key = f'vgg_layer_{i + 1}_output'
                     layer_output_data[layer_key] = layer_output
 
+                    # channel data
                     for j in range(layer_output.shape[0]):
                         key = f'vgg_layer_{i + 1}_channel_{j + 1}_output'
                         all_outputs[key] = layer_output[j:j + 1]
@@ -101,11 +102,11 @@ for label in range(10):
                     # plt.close()
 
                 # save data
-                npz_chennel_filename = os.path.join(output_folder_T, f'image_{idx}_npz.npz')
+                npz_channel_filename = os.path.join(output_folder_T, f'image_{idx}_npz.npz')
                 npz_layer_filename = os.path.join(output_folder_T, f'image_layer_{idx}_npz.npz')
-                np.savez(npz_chennel_filename, **all_outputs)
+                np.savez(npz_channel_filename, **all_outputs)
                 np.savez(npz_layer_filename, **layer_output_data)
-                print(f"Label {label}, Image {idx}: Outputs saved to {npz_chennel_filename}")
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
                 print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
                 del input_image, all_outputs
@@ -127,6 +128,7 @@ for label in range(10):
                     layer_key = f'vgg_layer_{i + 1}_output'
                     layer_output_data[layer_key] = layer_output
 
+                    # channel data
                     for j in range(layer_output.shape[0]):
                         key = f'vgg_layer_{i + 1}_channel_{j + 1}_output'
                         all_outputs[key] = layer_output[j:j + 1]
@@ -142,11 +144,11 @@ for label in range(10):
                     # plt.close()
 
                  # save data
-                npz_chennel_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
+                npz_channel_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
                 npz_layer_filename = os.path.join(output_folder_F, f'image_layer_{idx}_npz.npz')
-                np.savez(npz_chennel_filename, **all_outputs)
+                np.savez(npz_channel_filename, **all_outputs)
                 np.savez(npz_layer_filename, **layer_output_data)
-                print(f"Label {label}, Image {idx}: Outputs saved to {npz_chennel_filename}")
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
                 print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
                 del input_image, all_outputs
