@@ -101,8 +101,8 @@ for label in range(10):
                     # plt.close()
 
                 # save data
-                npz_chennel_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
-                npz_layer_filename = os.path.join(output_folder_F, f'image_layer_{idx}_npz.npz')
+                npz_chennel_filename = os.path.join(output_folder_T, f'image_{idx}_npz.npz')
+                npz_layer_filename = os.path.join(output_folder_T, f'image_layer_{idx}_npz.npz')
                 np.savez(npz_chennel_filename, **all_outputs)
                 np.savez(npz_layer_filename, **layer_output_data)
                 print(f"Label {label}, Image {idx}: Outputs saved to {npz_chennel_filename}")
