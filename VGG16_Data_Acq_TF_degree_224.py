@@ -118,7 +118,7 @@ for label in range(10):
                 # print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
                 print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
-                del input_image, all_outputs
+                del input_image, all_outputs, layer_output_data
                 torch.cuda.empty_cache()
 
             elif predicted.cpu() == labels and relative_difference <= 0.3:
@@ -158,7 +158,7 @@ for label in range(10):
                 # print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
                 print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
-                del input_image, all_outputs
+                del input_image, all_outputs, layer_output_data
                 torch.cuda.empty_cache()
 
             else:
@@ -198,5 +198,5 @@ for label in range(10):
                 # print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
                 print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
-                del input_image, all_outputs
+                del input_image, all_outputs, layer_output_data
                 torch.cuda.empty_cache()
