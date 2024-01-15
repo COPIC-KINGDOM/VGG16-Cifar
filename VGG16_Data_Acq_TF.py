@@ -63,7 +63,8 @@ for label in range(10):
             input_image = batch[0].to(device)
             input_image_labels = batch[1].to(device)
             all_outputs = {}
-
+            layer_output_data = {}
+            
             input_image_result = vgg_model.forward_with_fc(input_image)
             _, predicted = torch.max(input_image_result.data, 1)
 
@@ -81,6 +82,10 @@ for label in range(10):
                     input_image = layer(input_image)
                     layer_output = input_image.squeeze().detach().cpu().numpy()
 
+                    # layer data
+                    layer_key = f'vgg_layer_{i + 1}_output'
+                    layer_output_data[layer_key] = layer_output
+
                     for j in range(layer_output.shape[0]):
                         key = f'vgg_layer_{i + 1}_channel_{j + 1}_output'
                         all_outputs[key] = layer_output[j:j + 1]
@@ -95,9 +100,13 @@ for label in range(10):
                     # plt.savefig(heatmap_filename)
                     # plt.close()
 
-                npz_filename = os.path.join(output_folder_T, f'image_{idx}_npz.npz')
-                np.savez(npz_filename, **all_outputs)
-                print(f"Label {label}, Image {idx}: Outputs saved to {npz_filename}")
+                # save data
+                npz_chennel_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
+                npz_layer_filename = os.path.join(output_folder_F, f'image_layer_{idx}_npz.npz')
+                np.savez(npz_chennel_filename, **all_outputs)
+                np.savez(npz_layer_filename, **layer_output_data)
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_chennel_filename}")
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
                 del input_image, all_outputs
                 torch.cuda.empty_cache()
@@ -113,6 +122,10 @@ for label in range(10):
                 for i, layer in enumerate(conv_layers):
                     input_image = layer(input_image)
                     layer_output = input_image.squeeze().detach().cpu().numpy()
+                    
+                    # layer data
+                    layer_key = f'vgg_layer_{i + 1}_output'
+                    layer_output_data[layer_key] = layer_output
 
                     for j in range(layer_output.shape[0]):
                         key = f'vgg_layer_{i + 1}_channel_{j + 1}_output'
@@ -128,9 +141,13 @@ for label in range(10):
                     # plt.savefig(heatmap_filename)
                     # plt.close()
 
-                npz_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
-                np.savez(npz_filename, **all_outputs)
-                print(f"Label {label}, Image {idx}: Outputs saved to {npz_filename}")
+                 # save data
+                npz_chennel_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
+                npz_layer_filename = os.path.join(output_folder_F, f'image_layer_{idx}_npz.npz')
+                np.savez(npz_chennel_filename, **all_outputs)
+                np.savez(npz_layer_filename, **layer_output_data)
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_chennel_filename}")
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
                 del input_image, all_outputs
                 torch.cuda.empty_cache()
