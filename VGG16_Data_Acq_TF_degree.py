@@ -32,13 +32,12 @@ os.makedirs(output_folder, exist_ok=True)
 # Define transformation and load CIFAR-10 dataset
 transform = transforms.Compose([
     transforms.Resize((32, 32)),
-    # transforms.ColorJitter(contrast=0.5),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
 cifar10_dataset = CIFAR10(root='./data', train=False, download=True, transform=transform)
-data_loader = DataLoader(cifar10_dataset, batch_size=1, shuffle=True)
+data_loader = DataLoader(cifar10_dataset, batch_size=1, shuffle=False)
 
 class_outputs = {}
 
@@ -64,6 +63,7 @@ for label in range(10):
             input_image = batch[0].to(device)
             input_image_labels = batch[1].to(device)
             all_outputs = {}
+            layer_output_data = {}
 
             input_image_result = vgg_model.forward_with_fc(input_image)
             _, predicted = torch.max(input_image_result.data, 1)
@@ -83,19 +83,23 @@ for label in range(10):
 
             if predicted.cpu() == labels and relative_difference > 0.3:
                 # Define output and heatmap folders for the current label
-                output_folder_T = f'/media/tust/COPICAI/VGG16_cifar10_data_degree/cifar_{label}_vgg_outputs/cifar_{label}_vgg_outputs_T_H_degree'
+                output_folder_T_H = f'/media/tust/COPICAI/VGG16_cifar10_data_degree/cifar_{label}_vgg_outputs/cifar_{label}_vgg_outputs_T_H_degree'
                 # heatmap_folder_R = f'/media/tust/COPICAI/VGG16_cifar10_data/cifar_{label}_vgg_outputs/cifar_{label}_hot_img_T'
-                os.makedirs(output_folder_T, exist_ok=True)
+                os.makedirs(output_folder_T_H, exist_ok=True)
                 # os.makedirs(heatmap_folder_R, exist_ok=True)
 
                 # Iterate over each layer and save outputs
                 for i, layer in enumerate(conv_layers):
                     input_image = layer(input_image)
                     layer_output = input_image.squeeze().detach().cpu().numpy()
+                    layer_key = f'vgg_layer_{i + 1}_output'
+                    layer_output_data[layer_key] = layer_output
 
+                    '''
                     for j in range(layer_output.shape[0]):
                         key = f'vgg_layer_{i + 1}_channel_{j + 1}_output'
                         all_outputs[key] = layer_output[j:j + 1]
+                    '''
 
                     # Optionally, save heatmap images
                     # channel_output = layer_output[j:j + 1].squeeze()
@@ -107,28 +111,35 @@ for label in range(10):
                     # plt.savefig(heatmap_filename)
                     # plt.close()
 
-                npz_filename = os.path.join(output_folder_T, f'image_{idx}_npz.npz')
-                np.savez(npz_filename, **all_outputs)
-                print(f"Label {label}, Image {idx}: Outputs saved to {npz_filename}")
+                # npz_channel_filename = os.path.join(output_folder_T_H, f'image_{idx}_npz.npz')
+                npz_layer_filename = os.path.join(output_folder_T_H, f'image_layer_{idx}_npz.npz')
+                # np.savez(npz_channel_filename, **all_outputs)
+                np.savez(npz_layer_filename, **layer_output_data)
+                # print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
                 del input_image, all_outputs
                 torch.cuda.empty_cache()
 
             elif predicted.cpu() == labels and relative_difference <= 0.3:
                 # Define output and heatmap folders for the current label
-                output_folder_T = f'/media/tust/COPICAI/VGG16_cifar10_data_degree/cifar_{label}_vgg_outputs/cifar_{label}_vgg_outputs_T_L_degree'
+                output_folder_T_L = f'/media/tust/COPICAI/VGG16_cifar10_data_degree/cifar_{label}_vgg_outputs/cifar_{label}_vgg_outputs_T_L_degree'
                 # heatmap_folder_R = f'/media/tust/COPICAI/VGG16_cifar10_data/cifar_{label}_vgg_outputs/cifar_{label}_hot_img_T'
-                os.makedirs(output_folder_T, exist_ok=True)
+                os.makedirs(output_folder_T_L, exist_ok=True)
                 # os.makedirs(heatmap_folder_R, exist_ok=True)
 
                 # Iterate over each layer and save outputs
                 for i, layer in enumerate(conv_layers):
                     input_image = layer(input_image)
                     layer_output = input_image.squeeze().detach().cpu().numpy()
+                    layer_key = f'vgg_layer_{i + 1}_output'
+                    layer_output_data[layer_key] = layer_output
 
+                    '''
                     for j in range(layer_output.shape[0]):
                         key = f'vgg_layer_{i + 1}_channel_{j + 1}_output'
                         all_outputs[key] = layer_output[j:j + 1]
+                    '''
 
                     # Optionally, save heatmap images
                     # channel_output = layer_output[j:j + 1].squeeze()
@@ -140,9 +151,12 @@ for label in range(10):
                     # plt.savefig(heatmap_filename)
                     # plt.close()
 
-                npz_filename = os.path.join(output_folder_T, f'image_{idx}_npz.npz')
-                np.savez(npz_filename, **all_outputs)
-                print(f"Label {label}, Image {idx}: Outputs saved to {npz_filename}")
+                # npz_channel_filename = os.path.join(output_folder_T_L, f'image_{idx}_npz.npz')
+                npz_layer_filename = os.path.join(output_folder_T_L, f'image_layer_{idx}_npz.npz')
+                # np.savez(npz_channel_filename, **all_outputs)
+                np.savez(npz_layer_filename, **layer_output_data)
+                # print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
                 del input_image, all_outputs
                 torch.cuda.empty_cache()
@@ -158,10 +172,14 @@ for label in range(10):
                 for i, layer in enumerate(conv_layers):
                     input_image = layer(input_image)
                     layer_output = input_image.squeeze().detach().cpu().numpy()
+                    layer_key = f'vgg_layer_{i + 1}_output'
+                    layer_output_data[layer_key] = layer_output
 
+                    '''
                     for j in range(layer_output.shape[0]):
                         key = f'vgg_layer_{i + 1}_channel_{j + 1}_output'
                         all_outputs[key] = layer_output[j:j + 1]
+                    '''
 
                     # Optionally, save heatmap images
                     # channel_output = layer_output[j:j + 1].squeeze()
@@ -173,9 +191,12 @@ for label in range(10):
                     # plt.savefig(heatmap_filename)
                     # plt.close()
 
-                npz_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
-                np.savez(npz_filename, **all_outputs)
-                print(f"Label {label}, Image {idx}: Outputs saved to {npz_filename}")
+                # npz_channel_filename = os.path.join(output_folder_F, f'image_{idx}_npz.npz')
+                npz_layer_filename = os.path.join(output_folder_F, f'image_layer_{idx}_npz.npz')
+                # np.savez(npz_channel_filename, **all_outputs)
+                np.savez(npz_layer_filename, **layer_output_data)
+                # print(f"Label {label}, Image {idx}: Outputs saved to {npz_channel_filename}")
+                print(f"Label {label}, Image {idx}: Outputs saved to {npz_layer_filename}")
 
                 del input_image, all_outputs
                 torch.cuda.empty_cache()
